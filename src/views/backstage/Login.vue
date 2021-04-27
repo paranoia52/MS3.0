@@ -59,12 +59,22 @@
   </div>
 </template>
 <script>
-import { Login, Regist } from '@/http/api.ts'
-import { ref, toRefs, computed, reactive, nextTick, onMounted } from 'vue'
+import { Login, Regist } from '@/http/api'
+import {
+  ref,
+  toRefs,
+  computed,
+  reactive,
+  watch,
+  nextTick,
+  onMounted,
+  getCurrentInstance,
+} from 'vue'
 export default {
   props: {},
   emits: [],
   setup(props, context) {
+    //reactive  响应式数据，需要使用 ref（一般参数是基础类型），也可以使用 reactive 来一次声明多个变量；
     const data = reactive({
       query: {
         UserName: '',
@@ -81,6 +91,14 @@ export default {
       },
       isReg: false,
     })
+    watch(
+      () => data.isReg,
+      (newdata, olddata) => {
+        console.log('olddata', olddata, 'newdata', newdata)
+      }
+    )
+    // getCurrentInstance 方法获取当前组件实例，然后通过 ctx 属性获取当前上下文
+    const { ctx } = getCurrentInstance()
     const handleLogin = () => {
       if (!data.query.UserName || !data.query.PassWord) {
         console.log('请填写必填项')
@@ -90,9 +108,16 @@ export default {
         console.log(res)
         if (res.code === 0) {
           sessionStorage.setItem('token', res.data.token)
-          data.$router.push('/home')
+          ctx.$router.push('/home')
         }
       })
+    }
+    // store用法
+    const store = ctx.$store
+    const count = computed(() => store.state.count)
+    const addAction = () => {
+      store.dispatch('addAction')
+      console.log('store.state.count', store.state.count)
     }
     const handleRegist = () => {
       if (
@@ -142,6 +167,8 @@ export default {
       handleLogin,
       handleRegist,
       handleAvatarSuccess,
+      count,
+      addAction,
     }
   },
 }
@@ -169,7 +196,7 @@ export default {
     right: 0;
     // bottom: 0;
     z-index: 1;
-    /deep/ .star {
+    :deep(.star) {
       display: block;
       width: 1px;
       background: transparent;
