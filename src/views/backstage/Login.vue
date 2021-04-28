@@ -1,5 +1,5 @@
 <template>
-  <div class="Login">
+  <div id="root">
     <!-- 流星雨效果 -->
     <div id="stars">
       <div class="star" style="top: 0px;left: 500px;"></div>
@@ -15,7 +15,7 @@
           <el-input prefix-icon="el-icon-lock" placeholder="密码" type="password" v-model="query.PassWord"></el-input>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" style="width:100%;" @click.native.prevent="handleLogin">登录</el-button>
+          <el-button type="primary" style="width:100%;" @click.prevent="handleLogin">登录</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -51,7 +51,7 @@
           </el-upload>
         </el-form-item>
         <el-form-item label-width="0px">
-          <el-button type="primary" style="width:100%;" @click.native.prevent="handleRegist">注册</el-button>
+          <el-button type="primary" style="width:100%;" @click.prevent="handleRegist">注册</el-button>
         </el-form-item>
       </el-form>
     </el-card>
@@ -59,23 +59,10 @@
   </div>
 </template>
 <script>
-import { Login, Regist } from '@/http/api'
-import {
-  ref,
-  toRefs,
-  computed,
-  reactive,
-  watch,
-  nextTick,
-  onMounted,
-  getCurrentInstance,
-} from 'vue'
+import { Login, Regist } from '@/http/api.js'
 export default {
-  props: {},
-  emits: [],
-  setup(props, context) {
-    //reactive  响应式数据，需要使用 ref（一般参数是基础类型），也可以使用 reactive 来一次声明多个变量；
-    const data = reactive({
+  data() {
+    return {
       query: {
         UserName: '',
         PassWord: '',
@@ -83,101 +70,84 @@ export default {
       regQuery: {
         UserName: 'qz',
         PassWord: '',
-        NickName: '',
+        NickName: '红烛自怜无好计',
         Sex: 1,
         Age: 18,
         Signature: 'cool',
         HeadIcon: 'www.baidu.com',
       },
       isReg: false,
-    })
-    watch(
-      () => data.isReg,
-      (newdata, olddata) => {
-        console.log('olddata', olddata, 'newdata', newdata)
-      }
-    )
-    // getCurrentInstance 方法获取当前组件实例，然后通过 ctx 属性获取当前上下文
-    const { ctx } = getCurrentInstance()
-    const handleLogin = () => {
-      if (!data.query.UserName || !data.query.PassWord) {
-        console.log('请填写必填项')
+    }
+  },
+  methods: {
+    handleLogin() {
+      if (!this.query.UserName || !this.query.PassWord) {
+        this.$message.warning('请填写必填项')
         return
       }
-      Login(data.query).then((res) => {
+      Login(this.query).then((res) => {
         console.log(res)
         if (res.code === 0) {
           sessionStorage.setItem('token', res.data.token)
-          ctx.$router.push('/home')
+          this.$router.push('/home')
+        } else {
+          this.$message(res.msg)
         }
       })
-    }
-    // store用法
-    const store = ctx.$store
-    const count = computed(() => store.state.count)
-    const addAction = () => {
-      store.dispatch('addAction')
-      console.log('store.state.count', store.state.count)
-    }
-    const handleRegist = () => {
+    },
+    handleRegist() {
       if (
-        !data.regQuery.UserName ||
-        !data.regQuery.PassWord ||
-        !data.regQuery.NickName ||
-        !data.regQuery.Age ||
-        !data.regQuery.Signature ||
-        !data.regQuery.HeadIcon
+        !this.regQuery.UserName ||
+        !this.regQuery.PassWord ||
+        !this.regQuery.NickName ||
+        !this.regQuery.Age ||
+        !this.regQuery.Signature ||
+        !this.regQuery.HeadIcon
       ) {
-        console.log('请填写必填项')
+        this.$message.warning('请填写必填项')
         return
       }
-      Regist(data.regQuery).then((res) => {
+      Regist(this.regQuery).then((res) => {
         console.log(res)
+        this.$message(res.msg)
       })
-    }
-    const handleAvatarSuccess = (value) => {
-      data.regQuery.HeadIcon = value.url
+    },
+    handleAvatarSuccess(value) {
+      this.regQuery.HeadIcon = value.url
       console.log(value)
-    }
-    onMounted(() => {
-      nextTick(() => {
-        var stars = document.getElementById('stars')
-        // js随机生成流星
-        for (var j = 0; j < 20; j++) {
-          var newStar = document.createElement('div')
-          newStar.className = 'star'
-          newStar.style.top = randomDistance(100, -100) + 'px'
-          newStar.style.left = randomDistance(2000, 500) + 'px'
-          stars.appendChild(newStar)
-        }
-        // 封装随机数方法
-        function randomDistance(max, min) {
-          var distance = Math.floor(Math.random() * (max - min + 1) + min)
-          return distance
-        }
-        var star = document.getElementsByClassName('star')
-        // 给流星添加动画延时
-        for (var i = 0, len = star.length; i < len; i++) {
-          star[i].style.animationDelay = i % 6 == 0 ? '0s' : i * 0.8 + 's'
-        }
-      })
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      var stars = document.getElementById('stars')
+      // js随机生成流星
+      for (var j = 0; j < 20; j++) {
+        var newStar = document.createElement('div')
+        newStar.className = 'star'
+        newStar.style.top = randomDistance(100, -100) + 'px'
+        newStar.style.left = randomDistance(2000, 500) + 'px'
+        stars.appendChild(newStar)
+      }
+      // 封装随机数方法
+      function randomDistance(max, min) {
+        var distance = Math.floor(Math.random() * (max - min + 1) + min)
+        return distance
+      }
+      var star = document.getElementsByClassName('star')
+      // 给流星添加动画延时
+      for (var i = 0, len = star.length; i < len; i++) {
+        star[i].style.animationDelay = i % 6 == 0 ? '0s' : i * 0.8 + 's'
+      }
     })
-    return {
-      ...toRefs(data),
-      handleLogin,
-      handleRegist,
-      handleAvatarSuccess,
-      count,
-      addAction,
-    }
   },
 }
 </script>
+
 <style lang="less" scoped>
-.Login {
+#root {
   background: url('../../assets/img/bg.jpg') no-repeat;
-  background-size: 100% 100%;
-  min-height: 100vh;
+  width: 100%;
+  height: 100%;
   color: #fff;
   overflow: hidden;
   .btn {
