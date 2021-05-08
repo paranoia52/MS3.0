@@ -1,6 +1,6 @@
 <template>
   <div class="sidebar">
-    <el-menu class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" :unique-opened="true"
+    <el-menu :default-active="$route.path" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose"
       background-color="#000033" text-color="#ddd" :collapse="isCollapse" active-text-color="#fff" router>
       <el-menu-item @click="changeCollapse">
         <i :class="foldIcon"></i><span></span>
@@ -12,11 +12,11 @@
             <i :class="item.meta.icon" class="paddingR10"></i>
             <span>{{ item.meta.title }}</span>
           </template>
-          <template v-for="(child, chinx) in item.children" :key="chinx+100">
+          <div v-for="(child, chinx) in item.children" :key="chinx">
             <el-menu-item :index="item.path + '/' + child.path" class="paddingL60">
               {{ child.meta.title }}
             </el-menu-item>
-          </template>
+          </div>
         </el-submenu>
         <!-- 无子目录的模块菜单 -->
         <el-menu-item v-else :index="item.path" :key="index+1000">

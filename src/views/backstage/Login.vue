@@ -60,9 +60,18 @@
 </template>
 <script>
 import { Login, Regist } from '@/http/api.js'
+import {
+  toRefs,
+  computed,
+  reactive,
+  nextTick,
+  onMounted,
+  getCurrentInstance,
+} from 'vue'
 export default {
-  data() {
-    return {
+  setup(props, context) {
+    //reactive  响应式数据，需要使用 ref（一般参数是基础类型），也可以使用 reactive 来一次声明多个变量；
+    const data = reactive({
       query: {
         UserName: '',
         PassWord: '',
@@ -70,75 +79,86 @@ export default {
       regQuery: {
         UserName: 'qz',
         PassWord: '',
-        NickName: '红烛自怜无好计',
+        NickName: '',
         Sex: 1,
         Age: 18,
         Signature: 'cool',
         HeadIcon: 'www.baidu.com',
       },
       isReg: false,
+    })
+    // getCurrentInstance 方法获取当前组件实例，然后通过 ctx 属性获取当前上下文
+    const { ctx } = getCurrentInstance()
+    const store = ctx.$store
+    const count = computed(() => store.state.count)
+    // 组件方法以箭头函数形式书写
+    const addAction = () => {
+      store.dispatch('addAction')
     }
-  },
-  methods: {
-    handleLogin() {
-      if (!this.query.UserName || !this.query.PassWord) {
-        this.$message.warning('请填写必填项')
+    const handleLogin = () => {
+      if (!data.query.UserName || !data.query.PassWord) {
+        console.log('请填写必填项')
         return
       }
-      Login(this.query).then((res) => {
+      Login(data.query).then((res) => {
         console.log(res)
         if (res.code === 0) {
           sessionStorage.setItem('token', res.data.token)
-          this.$router.push('/home')
-        } else {
-          this.$message(res.msg)
+          ctx.$router.push('/home')
         }
       })
-    },
-    handleRegist() {
+    }
+    const handleRegist = () => {
       if (
-        !this.regQuery.UserName ||
-        !this.regQuery.PassWord ||
-        !this.regQuery.NickName ||
-        !this.regQuery.Age ||
-        !this.regQuery.Signature ||
-        !this.regQuery.HeadIcon
+        !data.regQuery.UserName ||
+        !data.regQuery.PassWord ||
+        !data.regQuery.NickName ||
+        !data.regQuery.Age ||
+        !data.regQuery.Signature ||
+        !data.regQuery.HeadIcon
       ) {
-        this.$message.warning('请填写必填项')
+        console.log('请填写必填项')
         return
       }
-      Regist(this.regQuery).then((res) => {
+      Regist(data.regQuery).then((res) => {
         console.log(res)
-        this.$message(res.msg)
       })
-    },
-    handleAvatarSuccess(value) {
-      this.regQuery.HeadIcon = value.url
+    }
+    const handleAvatarSuccess = (value) => {
+      data.regQuery.HeadIcon = value.url
       console.log(value)
-    },
-  },
-  mounted() {
-    this.$nextTick(() => {
-      var stars = document.getElementById('stars')
-      // js随机生成流星
-      for (var j = 0; j < 20; j++) {
-        var newStar = document.createElement('div')
-        newStar.className = 'star'
-        newStar.style.top = randomDistance(100, -100) + 'px'
-        newStar.style.left = randomDistance(2000, 500) + 'px'
-        stars.appendChild(newStar)
-      }
-      // 封装随机数方法
-      function randomDistance(max, min) {
-        var distance = Math.floor(Math.random() * (max - min + 1) + min)
-        return distance
-      }
-      var star = document.getElementsByClassName('star')
-      // 给流星添加动画延时
-      for (var i = 0, len = star.length; i < len; i++) {
-        star[i].style.animationDelay = i % 6 == 0 ? '0s' : i * 0.8 + 's'
-      }
+    }
+    onMounted(() => {
+      nextTick(() => {
+        var stars = document.getElementById('stars')
+        // js随机生成流星
+        for (var j = 0; j < 20; j++) {
+          var newStar = document.createElement('div')
+          newStar.className = 'star'
+          newStar.style.top = randomDistance(100, -100) + 'px'
+          newStar.style.left = randomDistance(2000, 500) + 'px'
+          stars.appendChild(newStar)
+        }
+        // 封装随机数方法
+        function randomDistance(max, min) {
+          var distance = Math.floor(Math.random() * (max - min + 1) + min)
+          return distance
+        }
+        var star = document.getElementsByClassName('star')
+        // 给流星添加动画延时
+        for (var i = 0, len = star.length; i < len; i++) {
+          star[i].style.animationDelay = i % 6 == 0 ? '0s' : i * 0.8 + 's'
+        }
+      })
     })
+    return {
+      ...toRefs(data),
+      handleLogin,
+      handleRegist,
+      handleAvatarSuccess,
+      count,
+      addAction,
+    }
   },
 }
 </script>
@@ -146,8 +166,7 @@ export default {
 <style lang="less" scoped>
 #root {
   background: url('../../assets/img/bg.jpg') no-repeat;
-  width: 100%;
-  height: 100%;
+  height: 100vh;
   color: #fff;
   overflow: hidden;
   .btn {

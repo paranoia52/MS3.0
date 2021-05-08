@@ -10,11 +10,11 @@
       <div class="header-right">
         <el-button type="primary" size="small">重置</el-button>
         <span style="margin: 0 10px;font-size:14px;">搜索条件</span>
-        <el-select v-model="query.KeyType" size="small" style="width:150px" placeholder="请选择">
+        <el-select v-model="queryForm.KeyType" size="small" style="width:150px" placeholder="请选择">
           <el-option v-for="item in options" :key="item.value" :label="item.label" :value="item.value">
           </el-option>
         </el-select>
-        <el-input v-model="query.Keyword" placeholder="请输入内容" size="small" style="width:200px;margin: 0 10px;">
+        <el-input v-model="queryForm.Keyword" placeholder="请输入内容" size="small" style="width:200px;margin: 0 10px;">
         </el-input>
         <Button :icon="'el-icon-search'" @click="search" :capion="'查询'" />
       </div>
@@ -65,7 +65,7 @@
       </el-table-column>
       <el-table-column align="center" prop="CreateTime" label="手机品牌">
         <template #default="scope">
-          {{ formatTimeUTC(scope.row.CreateTime) }}
+          {{ formatDate(scope.row.CreateTime) }}
         </template>
       </el-table-column>
       <el-table-column align="center" prop="IsOnline" label="注册时间">
@@ -91,14 +91,22 @@
       </el-table-column>
     </el-table>
     <!-- 分页 -->
-    <el-pagination layout="prev, pager, next" :hide-on-single-page="true" :total="total" :current-page="query.pageNo"
-      @current-change="changPage">
+    <el-pagination layout="prev, pager, next" :hide-on-single-page="true" :total="total"
+      :current-page="queryForm.pageNo" @current-change="changPage">
     </el-pagination>
     <!-- 修改用户数据弹窗 -->
-    <SetUserInfo :visible="showUserInfo" :form="UserInfo" @cancel="showUserInfo = false" />
+    <SetUserInfo @cancel="dialogVisible = false" />
   </div>
 </template>
 <script>
+import {
+  toRefs,
+  computed,
+  reactive,
+  provide,
+  onMounted,
+  getCurrentInstance,
+} from 'vue'
 import { GetUserList } from '@/http/api.js'
 import { formatTimeUTC } from '@/tool/filter'
 
@@ -109,9 +117,9 @@ export default {
     Button,
     SetUserInfo,
   },
-  data() {
-    return {
-      query: {
+  setup() {
+    const data = reactive({
+      queryForm: {
         pageNo: 1,
         KeyType: 0, // 0是全部  1是ID  2是昵称
         Keyword: '',
@@ -134,46 +142,56 @@ export default {
       loading: false,
       selectList: [], // 选中的用户列
       // 编辑用户信息
-      showUserInfo: false,
+      dialogVisible: false,
       UserInfo: {},
       total: 10,
+    })
+
+    provide('Visible', [data.dialogVisible, data.UserInfo])
+
+    const formatDate = (val) => {
+      return formatTimeUTC(val)
     }
-  },
-  methods: {
-    formatTimeUTC,
-    handleSelection(val) {
-      this.selectList = val
-    },
-    // 用户详情
-    toUserDetail(val) {
-      console.log(val)
-    },
+
+    const handleSelection = (val) => {
+      data.selectList = val
+    }
     // 编辑用户信息
-    operation(val) {
-      this.showUserInfo = true
-      this.UserInfo = val
-    },
+    const operation = (val) => {
+      // data.dialogVisible = true
+      // data.UserInfo = val
+    }
     // 条件查询
-    search() {
-      this.query.pageNo = 1
-      this.inquire()
-    },
-    changPage(val) {
-      this.query.pageNo = val
-      this.inquire()
-    },
+    const search = () => {
+      data.queryForm.pageNo = 1
+      handleQuery()
+    }
+    const changPage = (val) => {
+      data.queryForm.pageNo = val
+      handleQuery()
+    }
     // 获取数据
-    inquire() {
-      GetUserList(this.query).then((res) => {
+    const handleQuery = () => {
+      GetUserList(data.queryForm).then((res) => {
         console.log(res)
-        this.tableData = res.data.data
-        this.total = res.data.total
-        this.query.pageNo = res.data.pageNo
+        data.tableData = res.data.data
+        data.total = res.data.total
+        data.queryForm.pageNo = res.data.pageNo
       })
-    },
-  },
-  mounted() {
-    this.inquire()
+    }
+    onMounted(() => {
+      handleQuery()
+    })
+
+    return {
+      ...toRefs(data),
+      formatDate,
+      handleSelection,
+      operation,
+      search,
+      changPage,
+      handleQuery,
+    }
   },
 }
 </script>
