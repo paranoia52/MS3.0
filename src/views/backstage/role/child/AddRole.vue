@@ -27,14 +27,14 @@
   </div>
 </template>
 <script>
-import router from "@/router/index";
-import { AddRole } from "@/http/api";
+import router from '@/router/index'
+import { AddRole } from '@/http/api'
 export default {
   props: {
     updateform: {
       type: Object,
       default: function () {
-        return {};
+        return {}
       },
     },
   },
@@ -43,10 +43,10 @@ export default {
       data: {},
       menu_title: {},
       defaultProps: {
-        children: "children",
-        label: "label",
+        children: 'children',
+        label: 'label',
       },
-    };
+    }
   },
   watch: {
     updateform: {
@@ -54,7 +54,7 @@ export default {
         if (this.updateform.Menu) {
           for (const i in this.data) {
             for (const j of this.data[i]) {
-              this.$refs[j[0].id][0].setCheckedKeys(this.updateform.Menu, true);
+              this.$refs[j[0].id][0].setCheckedKeys(this.updateform.Menu, true)
             }
           }
         }
@@ -63,41 +63,41 @@ export default {
     },
   },
   created() {
-    this.filterTree();
+    this.filterTree()
   },
   methods: {
     handleConfirm() {
-      this.updateform.Menu = [];
+      this.updateform.Menu = []
       if (this.updateform.RoleName && this.updateform.Intro) {
-        let arr = [];
+        let arr = []
         for (const i in this.data) {
           for (const j of this.data[i]) {
-            arr = this.$refs[j[0].id][0].getCheckedKeys(true);
+            arr = this.$refs[j[0].id][0].getCheckedKeys(true)
             if (arr.length !== 0) {
-              this.updateform.Menu = [].concat(this.updateform.Menu, arr);
+              this.updateform.Menu = [].concat(this.updateform.Menu, arr)
             }
           }
         }
         AddRole(this.updateform).then((res) => {
-          console.log(res);
+          console.log(res)
           if (res.code == 0) {
-            this.updateform = { RoleName: "", Intro: "", Menu: [] };
-            this.$emit("save");
+            this.updateform = { RoleName: '', Intro: '', Menu: [] }
+            this.$emit('save')
           }
-          this.$message(res.msg);
-        });
+          this.$message(res.msg)
+        })
       } else {
-        this.$message("请填写必要的参数");
+        this.$message('请填写必要的参数')
       }
     },
     // 路由组装树形图结构
     filterTree() {
-      let arr = [];
-      let childrenObj = {};
-      const routeList = router.options.routes[3].children;
+      let arr = []
+      let childrenObj = {}
+      const routeList = router.options.routes[3].children
       for (const i in routeList) {
         if (routeList[i].children) {
-          arr = [];
+          arr = []
           for (const child of routeList[i].children) {
             childrenObj = {
               id: child.path,
@@ -105,27 +105,27 @@ export default {
               children: [
                 {
                   id: child.path,
-                  label: "查看",
+                  label: '查看',
                 },
                 {
-                  id: child.path + "-handle",
-                  label: "编辑",
+                  id: child.path + '-handle',
+                  label: '编辑',
                 },
               ],
-            };
+            }
             // 处理群管理特殊权限
             if (child.meta.specialPower) {
               for (const item in child.meta.specialPower) {
                 childrenObj.children.push({
-                  id: child.path + "-" + item,
+                  id: child.path + '-' + item,
                   label: child.meta.specialPower[item],
-                });
+                })
               }
             }
-            arr.push([childrenObj]);
+            arr.push([childrenObj])
           }
         } else {
-          let path = routeList[i].path.replace(/\//g, "");
+          let path = routeList[i].path.replace(/\//g, '')
           arr.push([
             {
               id: routeList[i].path,
@@ -133,29 +133,29 @@ export default {
               children: [
                 {
                   id: path,
-                  label: "查看",
+                  label: '查看',
                 },
                 {
-                  id: path + "-handle",
-                  label: "编辑",
+                  id: path + '-handle',
+                  label: '编辑',
                 },
               ],
             },
-          ]);
+          ])
         }
-        let str = routeList[i].path.replace("/", "");
-        this.data[str] = arr;
-        this.menu_title[str] = routeList[i].meta.title;
+        let str = routeList[i].path.replace('/', '')
+        this.data[str] = arr
+        this.menu_title[str] = routeList[i].meta.title
       }
     },
   },
-};
+}
 </script>
 
 <style lang="less" scoped>
 .addrole {
   // margin: -30px -20px;
-  /deep/.el-tabs__content {
+  :deep(.el-tabs__content) {
     overflow-x: auto;
   }
   .el-tab-pane {

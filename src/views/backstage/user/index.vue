@@ -17,7 +17,6 @@
         <el-input v-model="query.Keyword" placeholder="请输入内容" size="small" style="width:200px;margin: 0 10px;">
         </el-input>
         <Button :icon="'el-icon-search'" @click="search" :capion="'查询'" />
-        <Button :inIcon="'el-icon-d-arrow-right'" :capion="'更多'" />
       </div>
     </div>
     <!-- 表格 -->
@@ -185,7 +184,7 @@ export default {
     justify-content: space-between;
     margin: 10px;
   }
-  /deep/ .el-pagination {
+  :deep(.el-pagination) {
     background: #fff;
     text-align: right;
   }

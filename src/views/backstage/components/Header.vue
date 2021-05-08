@@ -7,49 +7,52 @@
     <div>
       <span style="margin-right: 20px;">{{ nowDate }}</span>
       <span>登录账号：</span>
-      <el-link type="primary" :underline="false" style="margin-right: 20px;">{{ userName }}
-      </el-link>
-      <el-link type="danger" :underline="false" @click="handleLogout">退出</el-link>
+      <el-link type="primary" :underline="false" class="Link">{{ userName }}</el-link>
+      <el-link type="primary" :underline="false" class="Link" @click="handleLogout">退出</el-link>
     </div>
   </div>
 </template>
 <script>
-import { formatTime } from "@/tool/filter.js";
+import { formatTime } from '@/tool/filter.js'
 export default {
   data() {
     return {
-      nowDate: "",
+      nowDate: '',
       levelList: [],
-      userName: "admin",
+      userName: 'admin',
       timer: null,
-    };
+    }
   },
   methods: {
     handleLogout() {
-      this.$router.push("/login");
-      sessionStorage.removeItem("token");
+      this.$router.push('/login')
+      sessionStorage.removeItem('token')
     },
   },
   created() {
     this.timer = setInterval(() => {
-      this.nowDate = formatTime(new Date().getTime());
-    }, 1000);
+      this.nowDate = formatTime(new Date().getTime())
+    }, 1000)
   },
   watch: {
     $route: function (value) {
-      this.levelList = [];
+      this.levelList = []
       for (let i of this.$route.matched) {
-        this.levelList.push(i.meta.title);
+        this.levelList.push(i.meta.title)
       }
     },
   },
-};
+}
 </script>
 <style lang="less" scoped>
 .header {
   height: 100%;
+  min-width: 720px;
   display: flex;
   justify-content: space-between;
   align-items: center;
+  .Link {
+    margin: 10px;
+  }
 }
 </style>
