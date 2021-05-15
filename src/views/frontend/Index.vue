@@ -2,35 +2,39 @@
   <div class="index">
     <!-- 导航 -->
     <div class="navbar">
-      <!-- <ul>
+      <ul>
         <li v-for="(el,i) in menuList" :key="i" :class="{active: i == menuIndex}"
           @click="menuIndex = i;$router.push(el.path)">
           {{el.meta.title}}</li>
-      </ul> -->
+      </ul>
     </div>
     <div class="main">
-      <router-view></router-view>
+      <router-view v-slot="{ Component }">
+        <keep-alive>
+          <component :is="Component" />
+        </keep-alive>
+      </router-view>
     </div>
   </div>
 </template>
 
 <script>
-import router from "@/router/index";
+import router from '@/router/index'
 export default {
   data() {
     return {
       menuList: [],
       menuIndex: 0,
-    };
+    }
   },
   created() {
     router.options.routes.forEach((element) => {
-      if (element.path === "/index") {
-        this.menuList = element.children;
+      if (element.path === '/index') {
+        this.menuList = element.children
       }
-    });
+    })
   },
-};
+}
 </script>
 <style lang="less" scoped>
 .index {
@@ -41,7 +45,7 @@ export default {
     ul {
       width: 80%;
       margin: 0 auto;
-      color: #DDD;
+      color: #ddd;
       display: flex;
       line-height: 44px;
       li {

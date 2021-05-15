@@ -7,27 +7,30 @@
     <Album v-else-if="curIndex==1" />
     <DoubleHelix v-else-if="curIndex==2" />
     <Graph v-else-if="curIndex==3" />
+    <Activity v-else-if="curIndex==4" />
   </div>
 </template>
 <script>
-import Stereo from "./child/Stereo";
-import Album from "./child/3DAlbum";
-import DoubleHelix from "./child/DoubleHelix";
-import Graph from "./child/Graph";
+import Stereo from './child/Stereo'
+import Album from './child/3DAlbum'
+import DoubleHelix from './child/DoubleHelix'
+import Graph from './child/Graph'
+import Activity from './child/activity/index'
 export default {
   components: {
     Stereo,
     Album,
     DoubleHelix,
     Graph,
+    Activity,
   },
   data() {
     return {
-      menu: ["3D立方体", "3D相册", "双螺旋", "各种图形"],
-      curIndex: 0,
-    };
+      menu: ['3D立方体', '3D相册', '双螺旋', '各种图形', '许愿池活动'],
+      curIndex: 4,
+    }
   },
-};
+}
 </script>
 <style lang="less" scoped>
 .anime {
@@ -45,7 +48,7 @@ export default {
       border-radius: 5px;
       margin: 5px;
       text-decoration: none;
-      font: 16px/100% "Microsoft yahei", Arial, Helvetica, sans-serif;
+      font: 16px/100% 'Microsoft yahei', Arial, Helvetica, sans-serif;
       padding: 0.5em 2em 0.55em;
       text-shadow: 0 1px 1px rgba(0, 0, 0, 0.3);
       box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);

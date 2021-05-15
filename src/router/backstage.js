@@ -1,37 +1,39 @@
-import Home from "@/views/backstage/Home.vue"
+import Home from "@/views/backstage/components/Home.vue"
 import BlankPage from "@/views/BlankPage.vue"
 export const backstage = {
   path: '/backstage',
+  name: 'backstage',
   meta: { title: '' },
   component: BlankPage,
   children: [
     {
       path: '/home',
-      meta: { title: '首页', icon: 'el-icon-s-home' },
+      meta: { title: '首页', icon: 'el-icon-s-home', submenu: true },
       component: Home,
       children: [
         {
           path: '',
           name: 'home',
-          meta: {
-            power: []
-          },
+          meta: {},
           component: () => import('@/views/backstage/user/index.vue'),
         }
       ]
     },
     {
-      path: '/userm',
+      path: '/user',
+      name: 'user',
       meta: { title: '账号管理', icon: 'el-icon-user' },
       component: Home,
       children: [
         {
           path: 'userList',
+          name: 'userList',
           meta: { title: '用户管理' },
           component: () => import('@/views/backstage/user/index.vue'),
         },
         {
           path: 'operateList',
+          name: 'operateList',
           meta: { title: '运营管理' },
         },
         {
@@ -64,7 +66,7 @@ export const backstage = {
         {
           path: 'socialSquare',
           meta: { title: '社交广场' },
-          component: () => import('@/views/backstage/music/MusicM.vue'),
+          component: () => import('@/views/backstage/music/index.vue'),
         },
       ]
     },

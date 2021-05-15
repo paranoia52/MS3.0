@@ -17,12 +17,12 @@ html,body {
 	user-select:none;
 }
 /* 以上代码也会禁止输入框的使用，可用以下代码解决： */
-input {
-	-webkit-user-select:auto; /*webkit浏览器*/
+/* input {
+	-webkit-user-select:auto; 
 }
 textarea {                                
-	-webkit-user-select:auto; /*webkit浏览器*/
-}
+	-webkit-user-select:auto; 
+} */
 
 li,ol,ul {
 	list-style: none;
